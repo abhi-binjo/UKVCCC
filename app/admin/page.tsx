@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, FileText, Settings, BarChart3 } from "lucide-react"
+import { Users, FileText, Settings, BarChart3, ImageIcon, Edit } from "lucide-react"
+import Link from "next/link"
 
 interface Registration {
   id: number
@@ -151,6 +152,7 @@ export default function AdminPage() {
           <TabsList>
             <TabsTrigger value="registrations">Registrations</TabsTrigger>
             <TabsTrigger value="content">Content Management</TabsTrigger>
+            <TabsTrigger value="media">Media Management</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -253,6 +255,37 @@ export default function AdminPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="media">
+            <Card>
+              <CardHeader>
+                <CardTitle>Media Management</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-gray-600 mb-4">Manage photos, gallery images, and other media content.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Link href="/admin/media">
+                    <Button
+                      variant="outline"
+                      className="w-full h-20 flex flex-col items-center justify-center space-y-2"
+                    >
+                      <ImageIcon className="w-8 h-8" />
+                      <span>Manage Gallery & Photos</span>
+                    </Button>
+                  </Link>
+                  <Link href="/admin/content">
+                    <Button
+                      variant="outline"
+                      className="w-full h-20 flex flex-col items-center justify-center space-y-2"
+                    >
+                      <Edit className="w-8 h-8" />
+                      <span>Edit Website Content</span>
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="settings">

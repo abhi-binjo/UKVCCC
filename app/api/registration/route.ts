@@ -1,7 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { neon } from "@neondatabase/serverless"
-
-const sql = neon(process.env.DATABASE_URL!)
+import { sql } from "@/lib/neon"
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,9 +18,6 @@ export async function POST(request: NextRequest) {
         ${data.specialization || null}, NOW(), 'pending'
       ) RETURNING id
     `
-
-    // Here you could also send confirmation email
-    // await sendConfirmationEmail(data.email, result[0].id)
 
     return NextResponse.json({
       success: true,

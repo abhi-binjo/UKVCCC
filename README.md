@@ -1,6 +1,6 @@
-# Uttarakhand State Veterinary Council Website
+# Uttarakhand State Veterinary Council Website v4
 
-A complete replica of the UKVC website built with Next.js, featuring dynamic content management, user registration system, and admin dashboard.
+A complete replica of the UKVC website built with Next.js, featuring dynamic content management, user registration system, and admin dashboard with Neon database integration.
 
 ## Features
 
@@ -10,16 +10,18 @@ A complete replica of the UKVC website built with Next.js, featuring dynamic con
 - **Database Integration**: PostgreSQL with Neon for data storage
 - **Admin Dashboard**: Manage registrations, content, and settings
 - **File Upload**: Document upload for registrations
-- **Email Notifications**: Automated confirmation emails
+- **Veterinarian Directory**: Searchable directory with detailed profiles
+- **Downloads Section**: Consolidated downloadable resources
+- **Gallery Management**: Photo gallery with categories
 - **SEO Optimized**: Meta tags and structured data
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, React, TypeScript
+- **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS, shadcn/ui components
 - **Database**: PostgreSQL (Neon)
-- **Authentication**: NextAuth.js (for admin)
-- **File Storage**: Vercel Blob
+- **ORM**: Direct SQL with @neondatabase/serverless
+- **File Storage**: Vercel Blob (for file uploads)
 - **Deployment**: Vercel
 
 ## Getting Started
@@ -27,7 +29,7 @@ A complete replica of the UKVC website built with Next.js, featuring dynamic con
 ### Prerequisites
 
 - Node.js 18+ 
-- PostgreSQL database (Neon recommended)
+- Neon PostgreSQL database
 - Vercel account (for deployment)
 
 ### Installation
@@ -46,29 +48,24 @@ A complete replica of the UKVC website built with Next.js, featuring dynamic con
 3. **Set up environment variables**
    Create a `.env.local` file in the root directory:
    \`\`\`env
-   # Database
-   DATABASE_URL="postgresql://username:password@host:port/database"
+   # Neon Database
+   DATABASE_URL="postgresql://username:password@host:port/database?sslmode=require"
    
-   # NextAuth (for admin authentication)
-   NEXTAUTH_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="your-secret-key"
+   # File Upload (Vercel Blob) - Optional
+   BLOB_READ_WRITE_TOKEN="your-blob-token"
    
-   # Email (for notifications)
+   # Email (for notifications) - Optional
    SMTP_HOST="your-smtp-host"
    SMTP_PORT="587"
    SMTP_USER="your-email"
    SMTP_PASS="your-password"
-   
-   # File Upload (Vercel Blob)
-   BLOB_READ_WRITE_TOKEN="your-blob-token"
    \`\`\`
 
 4. **Set up the database**
-   Run the SQL scripts to create tables:
+   Run the SQL scripts in your Neon console:
    \`\`\`bash
-   # Connect to your database and run:
-   # scripts/create-database.sql
-   # scripts/seed-data.sql
+   # First run: scripts/neon-schema.sql
+   # Then run: scripts/neon-seed.sql
    \`\`\`
 
 5. **Run the development server**
@@ -78,70 +75,115 @@ A complete replica of the UKVC website built with Next.js, featuring dynamic con
 
    Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Database Setup (Neon)
+
+### 1. Create Neon Database
+
+1. Go to [Neon Console](https://console.neon.tech)
+2. Create a new project
+3. Copy the connection string
+4. Add it to your `.env.local` as `DATABASE_URL`
+
+### 2. Run Database Scripts
+
+1. Open Neon Console → SQL Editor
+2. Copy and run `scripts/neon-schema.sql`
+3. Copy and run `scripts/neon-seed.sql`
+
 ## Project Structure
 
 \`\`\`
 ukvc-website/
 ├── app/                    # Next.js app directory
-│   ├── (pages)/           # Main website pages
 │   ├── admin/             # Admin dashboard
+│   │   └── content/       # Content management
 │   ├── api/               # API routes
-│   └── globals.css        # Global styles
+│   │   ├── registration/  # Registration API
+│   │   ├── veterinarians/ # Veterinarians API
+│   │   ├── content/       # Content management API
+│   │   └── committee-members/ # Committee API
+│   ├── veterinarians/     # Veterinarian directory
+│   │   └── [id]/         # Individual veterinarian pages
+│   ├── downloads/         # Downloads page
+│   └── (other pages)/     # Other website pages
 ├── components/            # Reusable components
 │   ├── ui/               # shadcn/ui components
 │   ├── header.tsx        # Site header
 │   └── footer.tsx        # Site footer
 ├── lib/                  # Utility functions
+│   └── neon.ts          # Neon database utilities
 ├── scripts/              # Database scripts
+│   ├── neon-schema.sql   # Database schema
+│   └── neon-seed.sql     # Initial data
 └── public/               # Static assets
 \`\`\`
 
-## Key Pages
+## Key Features
 
-- **Homepage** (`/`): Main landing page with officials and quick links
-- **Registration** (`/registration`): Veterinary registration form
-- **Services** (`/services`): List of all available services
-- **About** (`/about`): Information about UKVC
-- **Gallery** (`/gallery`): Photo gallery with categories
-- **Contact** (`/contact`): Contact information and form
-- **Admin** (`/admin`): Admin dashboard for content management
+### 1. Veterinarian Directory
+- **Searchable Directory**: Search by name, address, qualification, or registration number
+- **Detailed Profiles**: Individual pages for each veterinarian with complete information
+- **Contact Information**: Phone, email, and address details
+- **Registration Details**: IVPR numbers, expiry dates, and remarks
+
+### 2. Content Management System
+- **Editable Content**: Update website content through admin panel
+- **Committee Management**: Manage committee member information and photos
+- **Dynamic Updates**: Real-time content updates without code changes
+
+### 3. Downloads Section
+- **Organized Categories**: Acts & Rules, Forms, Reports, Circulars, etc.
+- **File Management**: Easy addition and removal of downloadable files
+- **Download Tracking**: Monitor download counts and usage
+
+### 4. Admin Dashboard
+- **Registration Management**: View, approve, or reject applications
+- **Content Management**: Update website content and committee information
+- **Statistics**: View registration statistics and trends
+
+## API Endpoints
+
+### Public Endpoints
+- `GET /api/veterinarians` - Get all veterinarians
+- `POST /api/registration` - Submit new registration
+
+### Admin Endpoints
+- `GET /api/registration` - Get all registrations (admin)
+- `PUT /api/content` - Update website content
+- `GET /api/content` - Get website content
+- `GET /api/committee-members` - Get committee members
+- `PUT /api/committee-members` - Update committee member
 
 ## Database Schema
 
 ### Main Tables
-
-- `registrations`: Store veterinary registration applications
-- `notices`: Public notices and announcements
-- `committee_members`: Council members and officials
-- `gallery_images`: Gallery photos with categories
-- `website_settings`: Configurable site settings
-- `admin_users`: Admin user accounts
-
-## Admin Features
-
-Access the admin dashboard at `/admin` to:
-
-- **Manage Registrations**: View, approve, or reject applications
-- **Content Management**: Add/edit notices, gallery images
-- **Settings**: Update contact information, fees, etc.
-- **User Management**: Manage admin accounts
+- `veterinarians` - Veterinarian directory with complete profiles
+- `registrations` - Registration applications
+- `website_content` - Editable website content
+- `committee_members` - Council members and officials
+- `downloads` - Downloadable files and documents
+- `gallery_images` - Photo gallery with categories
+- `notices` - Public notices and announcements
 
 ## Content Management
 
-### Adding Public Notices
-1. Go to Admin Dashboard → Content Management
-2. Fill in notice title and content
-3. Click "Publish Notice"
+### Updating Website Content
+1. Access `/admin/content`
+2. Select "Website Content" tab
+3. Edit content directly in the form fields
+4. Click "Update Content" to save changes
 
-### Managing Gallery
-1. Upload images through the admin panel
-2. Categorize images (office, events, ceremonies, etc.)
-3. Add descriptions and titles
+### Managing Committee Members
+1. Access `/admin/content`
+2. Select "Committee Members" tab
+3. Update member information, positions, and photos
+4. Changes reflect immediately on the website
 
-### Updating Settings
-1. Access Admin Dashboard → Settings
-2. Update contact information, fees, addresses
-3. Save changes
+### Adding New Veterinarians
+Veterinarians can be added through:
+1. Database direct insertion
+2. Admin panel (future feature)
+3. Registration approval process
 
 ## Deployment
 
@@ -155,57 +197,61 @@ Access the admin dashboard at `/admin` to:
    \`\`\`
 
 2. **Set environment variables** in Vercel dashboard
+   - `DATABASE_URL` (from Neon)
+   - Other optional variables
 
 3. **Deploy**
    \`\`\`bash
    vercel --prod
    \`\`\`
 
-### Database Setup (Neon)
+## Security Features
 
-1. Create a Neon database
-2. Run the SQL scripts in `scripts/` folder
-3. Update `DATABASE_URL` in environment variables
+- **Input Validation**: All forms include proper validation
+- **SQL Injection Prevention**: Parameterized queries with Neon
+- **File Upload Security**: Restricted file types and sizes
+- **Environment Variables**: Sensitive data stored securely
+- **Error Handling**: Proper error handling and logging
 
-## Customization
+## Performance Optimizations
 
-### Styling
-- Modify `app/globals.css` for global styles
-- Update Tailwind config in `tailwind.config.ts`
-- Customize components in `components/` directory
+- **Database Indexing**: Optimized indexes for fast queries
+- **Image Optimization**: Next.js automatic image optimization
+- **Caching**: Efficient caching strategies
+- **Lazy Loading**: Components and images loaded on demand
 
-### Content
-- Update official information in `app/page.tsx`
-- Modify navigation in `components/header.tsx`
-- Change contact details in `components/footer.tsx`
+## Browser Support
 
-### Features
-- Add new services in `app/services/page.tsx`
-- Create additional pages in `app/` directory
-- Extend database schema as needed
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
 
-## API Endpoints
+## Contributing
 
-- `POST /api/registration` - Submit new registration
-- `GET /api/registration` - Get all registrations (admin)
-- `PATCH /api/registration/[id]` - Update registration status
-- `POST /api/notices` - Add new notice
-- `GET /api/notices` - Get all notices
-
-## Security
-
-- Input validation on all forms
-- SQL injection prevention with parameterized queries
-- File upload restrictions (PDF only)
-- Admin authentication required for sensitive operations
-- Environment variables for sensitive data
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## Support
 
 For technical support or questions:
 - Email: support@ukvc.in
 - Phone: +91-XXXXXXXXXX
+- Office Hours: Mon-Fri, 10:00 AM - 5:00 PM
 
 ## License
 
 This project is developed for the Uttarakhand State Veterinary Council.
+
+## Changelog
+
+### v4.0.0
+- Migrated from Supabase to Neon database
+- Enhanced veterinarian directory with detailed profiles
+- Improved content management system
+- Added comprehensive downloads section
+- Better admin dashboard with real-time updates
+- Optimized database queries and performance

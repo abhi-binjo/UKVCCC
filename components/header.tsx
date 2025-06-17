@@ -8,16 +8,12 @@ import { Button } from "@/components/ui/button"
 const navigationItems = [
   { name: "HOME", href: "/" },
   { name: "ABOUT US", href: "/about" },
-  { name: "ACT & RULES", href: "/act-rules" },
-  { name: "ANNUAL REPORTS", href: "/annual-reports" },
-  { name: "CIRCULAR", href: "/circular" },
-  { name: "COMMITTEES", href: "/committees" },
   { name: "SERVICES", href: "/services" },
-  { name: "RTI", href: "/rti" },
-  { name: "NOC FORM", href: "/noc-form" },
-  { name: "RESTORE CERTIFICATE", href: "/restore-certificate" },
-  { name: "INSTRUCTIONS", href: "/instructions" },
+  { name: "VETERINARIANS", href: "/veterinarians" },
+  { name: "DOWNLOADS", href: "/downloads" },
+  { name: "COMMITTEES", href: "/committees" },
   { name: "GALLERY", href: "/gallery" },
+  { name: "CONTACT", href: "/contact" },
 ]
 
 export default function Header() {
